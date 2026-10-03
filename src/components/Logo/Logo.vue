@@ -1,7 +1,6 @@
 <template>
-    <a href="/">
-        <span :class="cvlogo"></span>
-    </a>
+    <!-- Not a link: in the offline build there is no site to go back to. -->
+    <span :class="cvlogo"></span>
 </template>
 
 <script>

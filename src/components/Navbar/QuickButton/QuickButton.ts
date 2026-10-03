@@ -11,6 +11,9 @@ export function saveOnline(): void {
 export function saveOffline(): void {
   logixFunction.saveOffline();
 }
+export function ExportProject(): void {
+  logixFunction.ExportProject();
+}
 export function deleteSelectedItem(): void {
   deleteSelected();
 }

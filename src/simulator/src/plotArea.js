@@ -152,7 +152,11 @@ const plotArea = {
     resize() {
         var oldHeight = this.height
         var oldWidth = this.width
-        this.width = document.getElementById('plot').clientWidth * this.DPR
+        // Same guard as setup(): the timing diagram is unmounted in Verilog mode,
+        // and resetup() still runs on window resize.
+        const plot = document.getElementById('plot')
+        if (!plot) return
+        this.width = plot.clientWidth * this.DPR
         this.height = getFullHeight(globalScope.Flag.length)
         if (oldHeight == this.height && oldWidth == this.width) return
         this.canvas.width = this.width

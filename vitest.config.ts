@@ -6,11 +6,23 @@ import vuetify from "vite-plugin-vuetify";
 import VueI18nPlugin from "@intlify/unplugin-vue-i18n/vite";
 import cssInjectedByJsPlugin from "vite-plugin-css-injected-by-js";
 
-const synthesisSpecs = [
-  "v1/src/simulator/spec/synthesis.spec.js",
-  "v1/src/simulator/spec/clientSynthesis.spec.js",
-  "v1/src/simulator/spec/parityTests.spec.js",
+// The synthesis specs run in a plain Node environment (no DOM) and are excluded
+// from the jsdom projects so they are not picked up twice.
+// The canonical copy lives in src/ (v0): that is the version the standalone
+// build ships.
+const synthesisSpecNames = [
+  "synthesis.spec.js",
+  "clientSynthesis.spec.js",
+  "parityTests.spec.js",
 ];
+
+const synthesisSpecs = synthesisSpecNames.map(
+  (name) => `src/simulator/spec/${name}`,
+);
+
+const legacySynthesisSpecs = synthesisSpecNames.map(
+  (name) => `v1/src/simulator/spec/${name}`,
+);
 
 const createProjectConfig = (version: string) => ({
   plugins: [
@@ -55,7 +67,7 @@ const createProjectConfig = (version: string) => ({
     exclude:
       version === "src"
         ? ["v0/**/*", "v1/**/*", ...synthesisSpecs]
-        : ["src/**/*", version === "v0" ? "v1/**/*" : "v0/**/*", ...synthesisSpecs],
+        : ["src/**/*", version === "v0" ? "v1/**/*" : "v0/**/*", ...legacySynthesisSpecs],
 
     setupFiles: [
       version === "src"

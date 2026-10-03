@@ -17,45 +17,66 @@ import { useRoute } from 'vue-router'
 import { useAuthStore } from '#/store/authStore'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { getToken } from '#/utils/auth'
+import { STANDALONE } from '#/standalone'
 
 const route = useRoute()
 const hasAccess = ref(true)
-const isLoading = ref(true)
+const isLoading = ref(!STANDALONE)
 const authStore = useAuthStore()
 const simulatorMobileStore = useSimulatorMobileStore()
 
+// Offline build: there is no Rails API to ask, so skip every probe and boot
+// straight into a blank circuit.
+if (STANDALONE) {
+    ;(window as any).logixProjectId = undefined
+    ;(window as any).isUserLoggedIn = false
+}
+
 // check if user has edit access to the project
 async function checkEditAccess() {
+    if (STANDALONE) {
+        isLoading.value = false
+        return
+    }
     await fetch(`/api/v1/projects/${window.logixProjectId}/check_edit_access`, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
             Authorization: `Token ${getToken('cvt')}`,
         },
-    }).then((res) => {
-        // if user has edit access load circuit data
-        if (res.ok) {
-            res.json().then((data) => {
-                authStore.setUserInfo(data.data)
-                ;(window as any).isUserLoggedIn = true
-                isLoading.value = false
-            })
-        } else if (res.status === 403) {
-            // if user has no edit access show edit access denied page
-            hasAccess.value = false
-            isLoading.value = false
-        } else if (res.status === 404) {
-            hasAccess.value = false
-            isLoading.value = false
-        } else if (res.status === 401) {
-            // if user is not logged in redirect to login page
-            window.location.href = '/users/sign_in'
-        }
     })
+        .then((res) => {
+            // if user has edit access load circuit data
+            if (res.ok) {
+                res.json().then((data) => {
+                    authStore.setUserInfo(data.data)
+                    ;(window as any).isUserLoggedIn = true
+                    isLoading.value = false
+                })
+            } else if (res.status === 403) {
+                // if user has no edit access show edit access denied page
+                hasAccess.value = false
+                isLoading.value = false
+            } else if (res.status === 404) {
+                hasAccess.value = false
+                isLoading.value = false
+            } else if (res.status === 401) {
+                // if user is not logged in redirect to login page
+                window.location.href = '/users/sign_in'
+            }
+        })
+        // Without this the spinner never clears when the API is unreachable.
+        .catch(() => {
+            isLoading.value = false
+        })
 }
 
 // get logged in user information when blank simulator is opened
 async function getLoginData() {
+    if (STANDALONE) {
+        isLoading.value = false
+        return
+    }
     try {
         const response = await fetch('/api/v1/me', {
             method: 'GET',

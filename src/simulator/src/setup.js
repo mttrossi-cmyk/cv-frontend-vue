@@ -25,6 +25,7 @@ import '../vendor/jquery-ui.min.css'
 import '../vendor/jquery-ui.min'
 import { confirmSingleOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/utils/auth'
+import { STANDALONE } from '#/standalone'
 
 // Loading icon fade animation constants and helpers
 const LOADING_ICON_SELECTOR = '.loadingIcon'
@@ -181,6 +182,16 @@ async function fetchProjectData(projectId) {
  * @category setup
  */
 async function loadProjectData() {
+    if (STANDALONE) {
+        // Nothing to load from a backend: just nudge the user towards the
+        // local-storage recovery path if there is unsaved work.
+        if (localStorage.getItem('recover')) {
+            showMessage(
+                "We have detected that you did not save your last work. Don't worry we have recovered them. Access them using Project->Recover"
+            )
+        }
+        return
+    }
     window.logixProjectId = parseInt(window.logixProjectId) || 0
     if (window.logixProjectId !== 0) {
         fadeInLoadingIcons()

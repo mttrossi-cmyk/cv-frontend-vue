@@ -4,7 +4,7 @@
             <!-- <DragSvgDots /> -->
             <div class="drag-dot-svg"></div>
         </div>
-        <div>
+        <div v-if="!STANDALONE">
             <button
                 type="button"
                 class="quick-btn-save-online"
@@ -16,8 +16,8 @@
             <button
                 type="button"
                 class="quick-btn-save"
-                title="Save Offline"
-                @click="saveOffline"
+                title="Save to file"
+                @click="ExportProject"
             ></button>
         </div>
         <div>
@@ -88,7 +88,8 @@
 </template>
 
 <script lang="ts" setup>
-import { saveOnline, saveOffline, deleteSelectedItem, createSaveAsImgPrompt, zoomToFit, undoit, redoit, view, decrement, increment } from './QuickButton';
+import { saveOnline, saveOffline, ExportProject, deleteSelectedItem, createSaveAsImgPrompt, zoomToFit, undoit, redoit, view, decrement, increment } from './QuickButton';
+import { STANDALONE } from '#/standalone'
 
 function dragover(): void {
     const quickBtn: HTMLElement | null = document.querySelector('.quick-btn')

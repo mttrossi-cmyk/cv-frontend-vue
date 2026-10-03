@@ -27,7 +27,7 @@
           :prepend-icon="
             authStore.getUserAvatar === 'default' ? 'mdi-account-circle-outline' : undefined
           "
-          :title="authStore.getUsername"
+          :title="displayName"
           lines="two"
           color="white"
         ></v-list-item>
@@ -48,7 +48,7 @@
         <v-divider class="my-2 bg-white"></v-divider>
 
         <!-- Authentication Section -->
-        <template v-if="!authStore.getIsLoggedIn">
+        <template v-if="!STANDALONE && !authStore.getIsLoggedIn">
           <v-list density="compact" nav>
             <v-list-item
               @click.stop="signIn"
@@ -70,7 +70,7 @@
         </template>
 
         <!-- User Menu Section -->
-        <template v-else>
+        <template v-else-if="!STANDALONE">
           <v-list density="compact" nav>
             <v-list-item
               @click.stop="dashboard"
@@ -135,7 +135,7 @@
             size="large"
             color="white"
           ></v-icon>
-          <span class="ml-2 text-white" style="font-size: 1.2rem">{{ authStore.getUsername }}</span>
+          <span class="ml-2 text-white" style="font-size: 1.2rem">{{ displayName }}</span>
         </v-btn>
       </v-main>
     </v-layout>
@@ -148,12 +148,15 @@ import { useI18n } from 'vue-i18n'
 import { availableLocale } from '#/locales/i18n'
 import { useAuthStore } from '#/store/authStore'
 import { signOutRails } from '#/utils/auth'
+import { STANDALONE } from '#/standalone'
 import './User.scss'
 
 const authStore = useAuthStore()
 const drawer = ref(false)
 const { locale } = useI18n()
 const unreadCount = ref(0)
+// No backend means no account: show a neutral label instead of a sign-in prompt.
+const displayName = STANDALONE ? 'Offline' : authStore.getUsername
 
 function signIn() {
   window.location.href = '/users/sign_in'

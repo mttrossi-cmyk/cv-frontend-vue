@@ -173,7 +173,7 @@
 
     <!-- --------------------------------------------------------------------------------------------- -->
     <!---issue reporting-system----->
-    <ReportIssue />
+    <ReportIssue v-if="!STANDALONE" />
     <!-- --------------------------------------------------------------------------------------------- -->
 
     <v-btn
@@ -259,6 +259,7 @@ import CustomShortcut from './DialogBox/CustomShortcut.vue'
 import InsertSubcircuit from './DialogBox/InsertSubcircuit.vue'
 import OpenOffline from './DialogBox/OpenOffline.vue'
 import ReportIssue from './ReportIssue/ReportIssue.vue'
+import { STANDALONE } from '#/standalone'
 import LayoutElementsPanel from './Panels/LayoutElementsPanel/LayoutElementsPanel.vue'
 import TestBenchPanel from './Panels/TestBenchPanel/TestBenchPanel.vue'
 import TestBenchCreator from './Panels/TestBenchPanel/TestBenchCreator.vue'

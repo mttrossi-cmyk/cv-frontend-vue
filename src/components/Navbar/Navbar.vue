@@ -26,13 +26,15 @@ import QuickButton from '@/Navbar/QuickButton/QuickButton.vue'
 import NavbarLinks from '@/Navbar/NavbarLinks/NavbarLinks.vue'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 
-import navbarData from '#/assets/constants/Navbar/NAVBAR_DATA.json'
+import navbarDataRaw from '#/assets/constants/Navbar/NAVBAR_DATA.json'
+import { navbarForBuild } from '#/standalone'
 
 import Logo from '@/Logo/Logo.vue'
 import UserMenu from './User/UserMenu.vue'
 import { ref } from 'vue'
 import { useProjectStore } from '#/store/projectStore'
 
+const navbarData = ref(navbarForBuild(navbarDataRaw as any))
 const navbarLogo = ref('logo')
 const projectStore = useProjectStore()
 const simulatorMobileStore = useSimulatorMobileStore()

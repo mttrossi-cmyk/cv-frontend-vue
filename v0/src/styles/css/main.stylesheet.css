@@ -14,11 +14,16 @@
 /*! Adding color variables to root, required later for hokey binding */
 
 /* typography */
-/* NOTE: the Raleway and Nunito @font-face rules were pointing at Google Fonts
-   (fonts.gstatic.com / fonts.googleapis.com). The Nunito one was malformed as
-   well (an @import URL cannot be a @font-face src). Both are removed: with no
-   network they can never load, and the stacks below fall back to the bundled
-   system fonts. */
+@font-face {
+    font-family: Raleway;
+    src: url('https://fonts.gstatic.com/s/raleway/v18/1Ptxg8zYS_SKggPN4iEgvnHyvveLxVvaorCIPrcVIT9d0c8.woff');
+}
+
+/* typography */
+@font-face {
+    font-family: 'Nunito', sans-serif;
+    src: url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200;1,200&display=swap');
+}
 
 /** Global Styles starts here */
 

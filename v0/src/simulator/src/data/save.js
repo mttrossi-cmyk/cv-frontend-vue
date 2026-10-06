@@ -18,7 +18,6 @@ import { UpdateProjectDetail } from '#/components/helpers/createNewProject/Updat
 import { confirmOption } from '#/components/helpers/confirmComponent/ConfirmComponent.vue'
 import { getToken } from '#/utils/auth'
 import { renderOrder } from '../metadata'
-import { STANDALONE } from '#/standalone'
 
 // var projectName = undefined
 
@@ -360,14 +359,6 @@ async function generateImageForOnline() {
  * @exports save
  */
 export default async function save() {
-    if (STANDALONE) {
-        // No backend to save to: "Save" means "write a .cv file to disk".
-        showMessage(
-            'There is no server in this build. Use Project -> Save to file to download a .cv file.'
-        )
-        return
-    }
-
     if (layoutModeGet()) toggleLayoutMode()
 
     projectSavedSet(true)

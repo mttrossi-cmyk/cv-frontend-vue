@@ -101,12 +101,10 @@
 
 <script lang="ts" setup>
 import Hamburger2 from '../Hamburger/Hamburger2.vue'
-import navbarDataRaw from '#/assets/constants/Navbar/NAVBAR_DATA.json'
-import { navbarForBuild } from '#/standalone'
+import navbarData from '#/assets/constants/Navbar/NAVBAR_DATA.json'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { saveOnline, saveOffline, deleteSelectedItem, createSaveAsImgPrompt, zoomToFit, undoit, redoit, view, decrement, increment } from './QuickButton';
 
-const navbarData = navbarForBuild(navbarDataRaw as any)
 const simulatorMobileStore = useSimulatorMobileStore()
 </script>
 

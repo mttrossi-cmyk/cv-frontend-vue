@@ -10,7 +10,6 @@ import { generateSaveData, getProjectName, setProjectName } from "./save";
 import load from "./load";
 import { SimulatorStore } from "#/store/SimulatorStore/SimulatorStore";
 import { confirmOption } from "#/components/helpers/confirmComponent/ConfirmComponent.vue";
-import { STANDALONE } from "#/standalone";
 
 /**
  * Helper function to recover unsaved data
@@ -205,20 +204,12 @@ export async function newProject(verify: boolean) {
   ) {
     clearProject();
     localStorage.removeItem("recover");
-    setProjectName(undefined);
-    projectId = generateId();
-
-    if (STANDALONE) {
-      // No Rails backend to navigate to: clearProject() already rebuilt the
-      // canvas in place, so there is nothing else to do.
-      showMessage("New Project has been created!");
-      return;
-    }
-
     const baseUrl =
       window.location.origin !== "null" ? window.location.origin : "http://localhost:4000";
     window.location.assign(`${baseUrl}/simulator/`);
 
+    setProjectName(undefined);
+    projectId = generateId();
     showMessage("New Project has been created!");
   }
 }

@@ -1,4 +1,4 @@
-@import url('../../styles/color_theme.scss');
+@import url('/src/styles/color_theme.scss');
 
 .navbar {
     background-color: var(--white);
@@ -17,7 +17,7 @@
     margin-bottom: 0px;
 }
 .logo {
-    background: url('../../styles/css/assets/logo.svg') center/cover;
+    background: url(/src/assets/logo.svg) center/cover;
     height: 30px;
     width: 105px;
     display: inline-block;

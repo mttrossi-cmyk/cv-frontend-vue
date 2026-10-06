@@ -25,7 +25,7 @@
                   :key="index"
                   density="compact"
                   :id="listItem.itemid"
-                  @click.stop="onItemClick(listItem)"
+                  @click.stop="logixFunction[listItem.itemid]()"
                   v-bind="
                   Object.fromEntries(
                       listItem.attributes.map((attr:AttrType) => [
@@ -60,12 +60,8 @@ defineProps({
   navbarItem: { type: Object, default: () => {} },
 })
 const menuButtonIsActive = ref(false)
-// Plain links (e.g. "User Manual") carry an href instead of a logixFunction id.
-const onItemClick = (listItem: { itemid?: string }) => {
-    if (listItem.itemid) logixFunction[listItem.itemid]()
-}
 const closeMenu = () => {
-    menuButtonIsActive.value = false
+  menuButtonIsActive.value = false
 }
 onMounted(() => {
   document.addEventListener('ui:close-menus', closeMenu)

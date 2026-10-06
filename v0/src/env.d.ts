@@ -1,14 +1,5 @@
 /// <reference types="vite/client" />
 
-interface ImportMetaEnv {
-  /** "1" builds the offline, backend-less bundle. */
-  readonly VITE_STANDALONE?: string;
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv;
-}
-
 interface Array<T> {
   clean(deleteValue: T): T[];
   extend(otherArray: T[]): void;

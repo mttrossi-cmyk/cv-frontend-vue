@@ -36,7 +36,6 @@ import { verilogModeGet } from './Verilog2CV'
 import { setupTimingListeners } from './plotArea'
 import logixFunction from './data'
 import { listen } from '@tauri-apps/api/event'
-import { isTauri } from '@tauri-apps/api/core'
 import { useSimulatorMobileStore } from '#/store/simulatorMobileStore'
 import { toRefs } from 'vue'
 import { fitToSelection } from './canvasApi'
@@ -826,13 +825,10 @@ function zoomSliderListeners() {
 }
 
 // Desktop App Listeners
-// These events only exist in the Tauri desktop shell: calling listen() in a
-// plain browser throws (window.__TAURI_INTERNALS__ is undefined), so the whole
-// block is guarded.
-if (isTauri()) {
-    listen('new-project', () => {
-        logixFunction.newProject();
-    });
+
+listen('new-project', () => {
+    logixFunction.newProject();
+});
 
 listen('save-online', () => {
     logixFunction.save();
@@ -907,14 +903,13 @@ listen('tutorial', () => {
 });
 
 listen('user-manual', () => {
-        logixFunction.showUserManual();
-    });
+    logixFunction.showUserManual();
+});
 
-    listen('learn-digital-circuit', () => {
-        logixFunction.showDigitalCircuit();
-    });
+listen('learn-digital-circuit', () => {
+    logixFunction.showDigitalCircuit();
+});
 
-    listen('discussion-forum', () => {
-        logixFunction.showDiscussionForum();
-    });
-}
+listen('discussion-forum', () => {
+    logixFunction.showDiscussionForum();
+});

@@ -214,9 +214,7 @@ export default function load(data) {
     const { circuit_list } = toRefs(simulatorStore)
 
     if (!data) {
-        // __projectName was injected by the legacy Rails view; read it off window
-        // so a bare (server-less) page does not throw a ReferenceError.
-        setProjectName(window.__projectName)
+        setProjectName(__projectName)
         return
     }
 

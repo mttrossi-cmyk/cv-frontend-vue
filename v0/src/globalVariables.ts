@@ -4,13 +4,10 @@
 declare const window: any;
 
 import jQuery from "jquery";
-import { STANDALONE } from "./standalone";
 window.$ = window.jQuery = jQuery;
 
-// In the standalone build there is no Rails session, no project and no embed:
-// pin the values the Rails views would otherwise inject.
-window.isUserLoggedIn = STANDALONE ? false : (window.isUserLoggedIn ?? false);
-window.logixProjectId = STANDALONE ? undefined : (window.logixProjectId ?? undefined);
+window.isUserLoggedIn = window.isUserLoggedIn ?? false;
+window.logixProjectId = window.logixProjectId ?? undefined;
 
 window.restrictedElements = [];
 window.globalScope = undefined;
@@ -19,7 +16,7 @@ window.projectId = undefined;
 window.id = undefined;
 window.loading = false; // Flag - all assets are loaded
 
-window.embed = STANDALONE ? false : (window.embed ?? false);
+window.embed = window.embed ?? false;
 
 window.width = undefined;
 window.height = undefined;

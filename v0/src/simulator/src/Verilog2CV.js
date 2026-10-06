@@ -5,9 +5,6 @@ import {
 } from './circuit';
 import SubCircuit from './subcircuit';
 import { simulationArea } from './simulationArea';
-import { synthesizeVerilog } from './synthesis/clientSynthesis.js';
-import { computeLayout, computePortLayout } from './synthesis/circuitLayout.js';
-import { STANDALONE } from '#/standalone';
 import CodeMirror from 'codemirror/lib/codemirror.js';
 import 'codemirror/lib/codemirror.css';
 
@@ -178,22 +175,6 @@ class verilogSubCircuit {
     }
 }
 
-function applyVerilogPortLayout(scope) {
-    var portLayout = computePortLayout(scope.Input.length, scope.Output.length);
-
-    Object.assign(scope.layout, portLayout.layout);
-
-    for (var i = 0; i < scope.Input.length; i++) {
-        scope.Input[i].layoutProperties.x = portLayout.inputs[i].x;
-        scope.Input[i].layoutProperties.y = portLayout.inputs[i].y;
-    }
-
-    for (var j = 0; j < scope.Output.length; j++) {
-        scope.Output[j].layoutProperties.x = portLayout.outputs[j].x;
-        scope.Output[j].layoutProperties.y = portLayout.outputs[j].y;
-    }
-}
-
 export function YosysJSON2CV(
     JSON,
     parentScope = globalScope,
@@ -239,19 +220,6 @@ export function YosysJSON2CV(
         }
     }
 
-    applyVerilogPortLayout(subScope);
-
-    // Auto-layout: compute non-overlapping positions
-    var layoutPositions = computeLayout(JSON);
-
-    for (var deviceId in JSON.devices) {
-        var pos = layoutPositions[deviceId];
-        if (pos && circuitDevices[deviceId] && circuitDevices[deviceId].element) {
-            circuitDevices[deviceId].element.x = pos.x;
-            circuitDevices[deviceId].element.y = pos.y;
-        }
-    }
-
     for (var connection in JSON.connectors) {
         var fromId = JSON.connectors[connection]['from']['id'];
         var fromPort = JSON.connectors[connection]['from']['port'];
@@ -273,43 +241,27 @@ export function YosysJSON2CV(
     }
 }
 
-function serverSynthesis(verilogCode) {
-    var params = { code: verilogCode };
-    return fetch('/api/v1/simulator/verilogcv', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(params),
-    }).then((response) => {
-        if (!response.ok) {
-            throw response;
-        }
-        return response.json();
-    });
-}
-
 export default function generateVerilogCircuit(
     verilogCode,
     scope = globalScope
 ) {
     clearVerilogOutput();
-
-    var useClientYosys = STANDALONE;
-    setVerilogOutput(
-        useClientYosys
-            ? 'Compiling Verilog (offline, WASM)...'
-            : 'Compiling Verilog code...',
-        'info'
-    );
-
-    var synthesisPromise = useClientYosys
-        ? synthesizeVerilog(verilogCode, (progress) => {
-              setVerilogOutput(progress, 'info');
-          })
-        : serverSynthesis(verilogCode);
-
-    synthesisPromise
+    setVerilogOutput('Compiling Verilog code...', 'info');
+    
+    var params = { code: verilogCode };
+    fetch('/api/v1/simulator/verilogcv', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(params),
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw response;
+            }
+            return response.json();
+        })
         .then((circuitData) => {
             scope.initialize();
             for (var id in scope.verilogMetadata.subCircuitScopeIds)
@@ -329,17 +281,7 @@ export default function generateVerilogCircuit(
             setVerilogOutput('Verilog Circuit Successfully Created', 'success');
         })
         .catch((error) => {
-            // The client-side path throws Error objects; the server path
-            // rejects with the raw fetch Response.
-            var message =
-                error && typeof error.json !== 'function'
-                    ? error.message || String(error)
-                    : null;
-
-            if (message) {
-                showError(message);
-                setVerilogOutput(message, 'error');
-            } else if (error.status == 500) {
+            if (error.status == 500) {
                 showError('Could not connect to Yosys');
                 setVerilogOutput('Could not connect to Yosys server', 'error');
             } else {

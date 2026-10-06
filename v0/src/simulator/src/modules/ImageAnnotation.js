@@ -138,18 +138,30 @@ export default class ImageAnnotation extends CircuitElement {
 
     async uploadImage() {
         var file = await promptFile('image/*', false)
-        if (!file) return
+        var apiUrl = 'https://api.imgur.com/3/image'
+        var apiKey = '9a33b3b370f1054'
+        var settings = {
+            crossDomain: true,
+            processData: false,
+            contentType: false,
+            type: 'POST',
+            url: apiUrl,
+            headers: {
+                Authorization: 'Client-ID ' + apiKey,
+                Accept: 'application/json',
+            },
+            mimeType: 'multipart/form-data',
+        }
+        var formData = new FormData()
+        formData.append('image', file)
+        settings.data = formData
 
-        // The image is inlined as a data URL rather than uploaded to a third
-        // party: that keeps the annotation inside the .cv file, so it survives
-        // export/import and needs no network (nor a hardcoded API key).
-        this.imageUrl = await new Promise((resolve, reject) => {
-            var reader = new FileReader()
-            reader.onload = () => resolve(reader.result)
-            reader.onerror = () => reject(reader.error)
-            reader.readAsDataURL(file)
-        })
-        showMessage('Image loaded')
+        // Response contains stringified JSON
+        // Image URL available at response.data.link
+        showMessage('Uploading Image')
+        var response = await $.ajax(settings)
+        showMessage('Image Uploaded')
+        this.imageUrl = JSON.parse(response).data.link
         this.loadImage()
     }
 
